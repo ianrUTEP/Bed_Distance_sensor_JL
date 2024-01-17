@@ -2,7 +2,7 @@
 #include <Panda_segmentBed_I2C.h>
 I2C_SegmentBED BD_SENSOR_I2C;
 #define  I2C_BED_SDA  2  
-#define  I2C_BED_SCL  15  
+#define  I2C_BED_SCL  3
 #define DELAY 100
 #define MAX_BD_HEIGHT 6.9
 #define CMD_START_READ_CALIBRATE_DATA   1017
@@ -19,18 +19,19 @@ void setup() {
   BD_SENSOR_I2C.i2c_init(I2C_BED_SDA,I2C_BED_SCL,0x3C,10);
   Serial.begin(115200);
   n=0;
+  Serial.println("Started");
 }
 
 void loop() {
     unsigned short tmp=0;
     tmp=BD_SENSOR_I2C.BD_i2c_read();    
     if(BD_SENSOR_I2C.BD_Check_OddEven(tmp)==0)
-      printf("CRC error!\n");
+      Serial.println("CRC error!");
     else
     {
       Distance=(tmp&0x3ff)/100.0;
       sprintf(tmp_1,"Distance:%.2f\n",Distance);
-      printf(tmp_1);
+      Serial.print(tmp_1);
     }
     delay(100);
     if((tmp&0x3ff)<1020)  
@@ -45,10 +46,10 @@ void loop() {
         {
           tmp=BD_SENSOR_I2C.BD_i2c_read();
           sprintf(tmp_1,"%d,%d,%d\n",i,tmp&0x3ff,BD_SENSOR_I2C.BD_Check_OddEven(tmp));
-          printf(tmp_1);
+          Serial.print(tmp_1);
           delay(100);
         }
-        printf("\n");
+        Serial.print("\n");
         BD_SENSOR_I2C.BD_i2c_write(CMD_END_READ_CALIBRATE_DATA);
 
 
